@@ -15,7 +15,6 @@ passport.use(
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 
     }, (accessToken, refreshToken, profile, done) => {
-        // console.log(profile);
         user = {
             name: profile.displayName,
             googleID: profile.id,

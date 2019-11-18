@@ -13,6 +13,7 @@ router.get('/google-drive/callback', passport.authenticate('google'), (req, res)
 });
 
 router.get('/user', (req, res) => {
+    // console.log(cookies.get('user'));
     // let profile = req.user;
     // const token = jwt.sign({accessToken: profile.accessToken}, process.env.TOKEN_SECRET);
     try {

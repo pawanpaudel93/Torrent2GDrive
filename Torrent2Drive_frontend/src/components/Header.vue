@@ -12,7 +12,7 @@
                 <router-link class="nav-item" tag="li" to="/login" v-if="!isAuthenticated" active-class="active"><a class="nav-link">Authenticate with Google Drive</a></router-link>
                 <router-link class="nav-item" tag="li" to="/download" v-if="isAuthenticated" active-class="active"><a class="nav-link">Download</a></router-link>
             </ul>
-            <ul class="navbar-nav">
+            <ul class="navbar-nav" v-if="isAuthenticated">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <img v-if="user" :src="user.avatar" width="30" height="30" class="rounded-circle">

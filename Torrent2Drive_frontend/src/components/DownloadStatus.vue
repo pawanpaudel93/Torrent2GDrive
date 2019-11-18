@@ -25,22 +25,39 @@
 </style>
 
 <script>
-    export default {
-        data() {
-           return {
-               stats: null
-           }
-        },
-        created () {
-            setInterval(() => {
-                this.$store.dispatch('setStats');
-                this.stats = JSON.parse(this.$store.getters.getStats);
-            }, 1000)
-        },
-        filters: {
-            toMinutesSeconds(seconds) {
-                return Math.floor(seconds / 60) + ':' + ('0' + Math.floor(seconds % 60)).slice(-2);
-            }
-        }
+export default {
+  props: ['downloadCompleted'],
+  data () {
+    return {
+      stats: null,
+      interval: null
     }
+  },
+  created () {
+    this.interval = setInterval(() => {
+      this.$store.dispatch('setStats')
+      if (JSON.parse(this.$store.getters.getStats)) {
+        this.stats = JSON.parse(this.$store.getters.getStats)
+      }
+      if (Number(JSON.parse(this.$store.getters.getStats).timeRemaining) <= 20) {
+        this.$store.dispatch('setFinished')
+        if (JSON.parse(this.$store.getters.isFinished)) {
+          this.downloadCompleted()
+        }
+      }
+    }, 1000)
+  },
+  destroyed () {
+    clearInterval(this.interval)
+  },
+  filters: {
+    toMinutesSeconds (totalSeconds) {
+      const hours = ('0' + Math.floor(totalSeconds / 3600)).slice(-2)
+      totalSeconds %= 3600
+      const minutes = ('0' + Math.floor(totalSeconds / 60)).slice(-2)
+      const seconds = ('0' + Math.floor(totalSeconds % 60)).slice(-2)
+      return (hours + ':' + minutes + ':' + seconds)
+    }
+  }
+}
 </script>

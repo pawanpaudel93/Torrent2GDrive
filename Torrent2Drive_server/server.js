@@ -6,6 +6,7 @@ const passport = require('passport')
 const cookieSession = require('cookie-session')
 const cors = require('cors')
 const path = require('path')
+const sslRedirect = require('heroku-ssl-redirect');
 require('dotenv').config()
 
 const app = express();
@@ -17,13 +18,14 @@ app.use(cookieSession({
 }))
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(sslRedirect());
 
-app.use(express.static(path.join(__dirname, './dist')));
+app.use(express.static(path.join(__dirname, '../Torrent2Drive_frontend/dist')));
 app.use('/auth', authRoutes);
 app.use('/download', downloadRoutes);
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '/dist/index.html'))
+    res.sendFile(path.join(__dirname, '../Torrent2Drive_frontend/dist/index.html'))
 });
 
 const port = process.env.PORT || 3000;

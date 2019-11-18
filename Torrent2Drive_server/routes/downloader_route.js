@@ -44,16 +44,22 @@ var torrentClient = new WebTorrent(opts);
 // }
 
 router.get('/stats', (req,res) =>{
-    const stats = localStorage.getItem('stats');
+    const stats = localStorage.getItem(`${req.user.googleID}`);
     res.json(stats); 
 });
 
+router.get('/finished', (req,res) => {
+    const isFinished = localStorage.getItem('isFinished');
+    res.json(isFinished);
+});
+
 router.post('/', (req, res) => {
+    localStorage.clear();
     var magnetURI = req.body.magnet;
     try {
         parseTorrent(magnetURI)
     } catch (err) {
-        return res.status(500).json({error: err});
+        res.status(500).json({error: err});
     }
     console.log(magnetURI);
     torrentClient.add(magnetURI, opts, (torrent) => {
@@ -72,13 +78,14 @@ router.post('/', (req, res) => {
                 speed : (torrent.downloadSpeed/(1024*1024)).toFixed(3) + ' MB/sec',
                 totalSize: (torrent.length/(1024*1024)).toFixed(3) + ' MB',
             }
-            localStorage.setItem('stats', JSON.stringify(stats));
+            localStorage.setItem(`${req.user.googleID}`, JSON.stringify(stats));
         }, 1000);
 
         torrent.on('done', function () {
             clearInterval(interval);
+            isFinished = {hasFinished: true}
+            localStorage.setItem('isFinished', JSON.stringify(isFinished));
             console.log('torrent download finished');
-
             // config google drive with client token
             const oauth2Client = new google.auth.OAuth2()
             oauth2Client.setCredentials({
@@ -125,7 +132,6 @@ router.post('/', (req, res) => {
                     })
                 }
             });
-            localStorage.clear();
             return res.json({finished: 'true'})
         });
     })
