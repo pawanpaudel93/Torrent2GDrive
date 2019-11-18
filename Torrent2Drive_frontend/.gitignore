@@ -1,0 +1,11 @@
+# VueJS
+.DS_Store
+Thumbs.db
+db.json
+*.log
+node_modules/
+.deploy*/
+src/_drafts
+package-lock.json
+dist/
+.idea/
