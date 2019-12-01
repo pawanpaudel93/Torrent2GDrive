@@ -6,7 +6,8 @@
       "heroku-postbuild": "npm run build-client && npm run install-server",
       "start": "node Torrent2Drive_server/server.js",
       "build-client": "cd ./Torrent2Drive_frontend && npm install && npm run build",
-      "install-server": "cd ./Torrent2Drive_server && npm install"
+      "install-server": "cd ./Torrent2Drive_server && npm install",
+      "local-build": "npm run build-client && npm run install-server"
     },
     "engines": {
       "node": ">= 4.0.0"

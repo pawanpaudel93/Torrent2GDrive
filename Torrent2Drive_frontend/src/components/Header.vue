@@ -2,7 +2,7 @@
     <nav class="navbar navbar-dark bg-primary navbar-expand-sm">
         <router-link class="navbar-brand" to="/" tag="a">
             <img src="../../public/img/icons/Torrent2Drive.png" width="30" height="30" alt="logo"/>
-            Torrent2Drive
+            Torrent2GDrive
         </router-link>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -34,27 +34,25 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    export default {
-        computed: {
-            user() {
-                return this.$store.getters.getUser;
-            },
-            isAuthenticated() {
-                return this.$store.getters.isAuthenticated;
-            }
-        },
-        methods: {
-            logout() {
-                localStorage.clear();
-                this.$store.dispatch('logout');
-                axios.get('/auth/logout')
-                  .then(res => console.log(res))
-                  .catch(err => console.log(err))
-                this.$router.replace('/');
-            }
-        }
+import axios from 'axios'
+export default {
+  computed: {
+    user () {
+      return this.$store.getters.getUser
+    },
+    isAuthenticated () {
+      return this.$store.getters.isAuthenticated
     }
+  },
+  methods: {
+    logout () {
+      localStorage.clear()
+      this.$store.dispatch('logout')
+      axios.get('/auth/logout')
+      this.$router.replace('/')
+    }
+  }
+}
 </script>
 
 <style>

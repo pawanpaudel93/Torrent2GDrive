@@ -11,20 +11,18 @@
 </template>
 
 <script>
-    import GoogleLogin from './GoogleLogin';
-    import TorrentDownload from './TorrentDownload';
-    export default {
-        created () {
-            const expiresIn = localStorage.getItem('expiresIn');
-            if (!expiresIn) {
-                return;
-            }
-            const now = new Date();
-            if (now >= expiresIn) {
-                return;
-            } else {
-                this.$router.replace('/download');
-            }
-        }
+export default {
+  created () {
+    const expiresIn = localStorage.getItem('expiresIn')
+    if (!expiresIn) {
+      return
     }
+    const now = new Date()
+    if (now >= expiresIn) {
+      localStorage.clear()
+    } else {
+      this.$router.replace('/download')
+    }
+  }
+}
 </script>

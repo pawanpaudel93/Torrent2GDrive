@@ -33,7 +33,7 @@ export default new Vuex.Store({
           commit('SET_USER', res.data)
         })
         .catch((error) => {
-          console.log(error)
+        //   console.log(error)
           router.replace('/login')
         })
     },
@@ -42,18 +42,20 @@ export default new Vuex.Store({
         .then(res => {
           commit('SET_STATS', res.data)
         })
+        // eslint-disable-next-line handle-callback-err
         .catch(error => {
-          console.log(error)
+          // console.log(error)
         })
     },
     setFinished ({ commit }) {
       axios.get('/download/finished')
         .then(res => {
-          console.log(res.data)
+          // console.log(res.data)
           commit('SET_FINISHED', JSON.parse(res.data))
         })
+        // eslint-disable-next-line handle-callback-err
         .catch(err => {
-          console.log(err)
+          // console.log(err)
         })
     },
     logout ({ commit }) {
