@@ -1,3 +1,5 @@
+/* eslint-disable handle-callback-err */
+/* eslint-disable no-useless-return */
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
@@ -60,6 +62,21 @@ export default new Vuex.Store({
     },
     logout ({ commit }) {
       commit('LOGOUT')
+    },
+    autoLogin ({ getters }) {
+      const expiresIn = localStorage.getItem('expiresIn')
+      if (!expiresIn) {
+        return
+      }
+      const now = new Date()
+      if (now >= expiresIn) {
+        console.log('token expired')
+        localStorage.clear()
+        return
+      } else {
+        console.log('token not expired')
+        router.replace('/download')
+      }
     }
   },
   getters: {

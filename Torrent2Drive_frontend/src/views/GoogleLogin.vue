@@ -22,16 +22,7 @@
             }
         },
         created () {
-            const expiresIn = localStorage.getItem('expiresIn');
-            if (!expiresIn) {
-                return;
-            }
-            const now = new Date();
-            if (now >= expiresIn || !this.$store.getters.isAuthenticated) {
-                return;
-            } else {
-                this.$router.replace('/download');
-            }
+            this.$store.dispatch('autoLogin')
         }
     }
 </script>

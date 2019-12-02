@@ -4,6 +4,14 @@
         <div class="download-form">
             <form @submit.prevent="onSubmit">
                 <div class="input" :class="{invalid: $v.magnet.$error}">
+                    <label for="zip">
+                            <input
+                                type="checkbox"
+                                id="zip"
+                                value="true"
+                                v-model="doZip"
+                            > Zip it?
+                    </label>
                     <label for="magnet">Magnet</label>
                     <input
                             type="text"
@@ -21,7 +29,7 @@
             </form>
         </div>
         <app-download-status v-if="showStats" :downloadCompleted="downloadCompleted"></app-download-status>
-        <app-download-complete v-if="finished"></app-download-complete>
+        <app-download-complete v-if="finished" :doZip="doZip"></app-download-complete>
     </div>
 </template>
 
@@ -37,7 +45,8 @@ export default {
       magnet: '',
       finished: false,
       showStats: false,
-      error: null
+      error: null,
+      doZip: false
     }
   },
   validations: {
@@ -62,7 +71,7 @@ export default {
       this.$refs.downloadButton.innerText = 'Downloading'
       this.$store.state.stats = null
       this.finished = false
-      axios.post('/download', { magnet: this.magnet })
+      axios.post('/download', { magnet: this.magnet, doZip: this.doZip })
         .then(res => {
           console.log(res.data)
           this.finished = res.data.finished

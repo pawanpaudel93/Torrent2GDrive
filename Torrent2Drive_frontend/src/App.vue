@@ -12,17 +12,7 @@
         appHeader: Header
       },
       created () {
-          const expiresIn = localStorage.getItem('expiresIn');
-          console.log(expiresIn);
-          if (!expiresIn) {
-              return;
-          }
-          const now = new Date();
-          if (now >= expiresIn) {
-              return;
-          } else {
-              this.$store.commit('CHANGE_COMPONENT', 'app-torrent-download');
-          }
+        this.$store.dispatch('autoLogin')
       }
     }
 </script>

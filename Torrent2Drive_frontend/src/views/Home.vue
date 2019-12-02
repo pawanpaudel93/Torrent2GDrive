@@ -13,16 +13,7 @@
 <script>
 export default {
   created () {
-    const expiresIn = localStorage.getItem('expiresIn')
-    if (!expiresIn) {
-      return
-    }
-    const now = new Date()
-    if (now >= expiresIn) {
-      localStorage.clear()
-    } else {
-      this.$router.replace('/download')
-    }
+    this.$store.dispatch('autoLogin')
   }
 }
 </script>
