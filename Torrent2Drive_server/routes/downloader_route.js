@@ -6,9 +6,11 @@ const jwt = require('jsonwebtoken');
 const {google} = require('googleapis');
 const parseTorrent = require('parse-torrent')
 const fs = require('fs');
+const path = require('path');
 const app = require('../server')
 const LocalStorage = require('node-localstorage').LocalStorage;
 const localStorage = new LocalStorage('./torrentStats');
+const zipper = require('zip-local');
 
 const opts = {
 	connections: 1000,     // Max amount of peers to be connected to.
@@ -108,28 +110,56 @@ router.post('/', (req, res) => {
                     console.log('Folder Id: ', file.data.id);
                     var folderId = file.data.id;
                     // upload dwownloaded files
-                    torrent.files.forEach(function (file) {
-                    var fileMetadata = {
-                        'name': file.name,
-                        parents: [folderId]
-                    };
-                    var media = {
-                        mimeType: mime.lookup(file.name),
-                        body: fs.createReadStream('./downloads/' + file.path)
-                    };
-                    drive.files.create({
-                        resource: fileMetadata,
-                        media: media,
-                        fields: 'id'
-                    }, function (err, file) {
-                        if (err) {
-                        // Handle error
-                        console.error(err);
-                        } else {
-                        console.log('File Id: ', file.data.id);
-                        }
-                    });
-                    })
+                    if (req.body.doZip) {
+                        // zip downloaded files
+                        let uploadFolder = path.join('./downloads', torrent.name)
+                        let zipFile = path.join('./downloads', torrent.name + '.zip')
+                        zipper.sync.zip(uploadFolder).compress().save(zipFile);
+                        console.log('Zipped Successfully');
+                        var fileMetadata = {
+                            'name': zipFile,
+                            parents: [folderId]
+                        };
+                        var media = {
+                            mimeType: mime.lookup(zipFile),
+                            body: fs.createReadStream(zipFile)
+                        };
+                        drive.files.create({
+                            resource: fileMetadata,
+                            media: media,
+                            fields: 'id'
+                        }, function (err, file) {
+                            if (err) {
+                            // Handle error
+                            console.error(err);
+                            } else {
+                            console.log('File Id: ', file.data.id);
+                            }
+                        });
+                    } else {
+                        torrent.files.forEach(function (file) {
+                            var fileMetadata = {
+                                'name': file.name,
+                                parents: [folderId]
+                            };
+                            var media = {
+                                mimeType: mime.lookup(file.name),
+                                body: fs.createReadStream('./downloads/' + file.path)
+                            };
+                            drive.files.create({
+                                resource: fileMetadata,
+                                media: media,
+                                fields: 'id'
+                            }, function (err, file) {
+                                if (err) {
+                                // Handle error
+                                console.error(err);
+                                } else {
+                                console.log('File Id: ', file.data.id);
+                                }
+                            });
+                        })
+                    }
                 }
             });
             return res.json({finished: 'true'})
