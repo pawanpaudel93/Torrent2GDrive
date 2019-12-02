@@ -1,0 +1,7 @@
+{
+    "name": "Torrent2GDrive",
+    "description": "Torrent webapp to download to GDrive",
+    "repository": "https://github.com/pawanpaudel93/Torrent2GDrive",
+    "logo": "https://torrent2-gdrive.herokuapp.com/img/Torrent2Drive.0211de43.png",
+    "keywords": ["node", "express", "webtorrent"]
+  }
