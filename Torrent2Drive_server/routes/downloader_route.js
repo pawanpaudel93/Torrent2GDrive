@@ -10,7 +10,7 @@ const path = require('path');
 const app = require('../server')
 const LocalStorage = require('node-localstorage').LocalStorage;
 const localStorage = new LocalStorage('./torrentStats');
-const zipper = require('zip-local');
+const archiver = require('archiver');
 
 const opts = {
 	connections: 1000,     // Max amount of peers to be connected to.
@@ -114,27 +114,36 @@ router.post('/', (req, res) => {
                         // zip downloaded files
                         let uploadFolder = path.join('./downloads', torrent.name)
                         let zipFile = path.join('./downloads', torrent.name + '.zip')
-                        zipper.sync.zip(uploadFolder).compress().save(zipFile);
-                        console.log('Zipped Successfully');
-                        var fileMetadata = {
-                            'name': zipFile,
-                            parents: [folderId]
-                        };
-                        var media = {
-                            mimeType: mime.lookup(zipFile),
-                            body: fs.createReadStream(zipFile)
-                        };
-                        drive.files.create({
-                            resource: fileMetadata,
-                            media: media,
-                            fields: 'id'
-                        }, function (err, file) {
-                            if (err) {
-                            // Handle error
-                            console.error(err);
-                            } else {
-                            console.log('File Id: ', file.data.id);
-                            }
+
+                        var output = fs.createWriteStream(zipFile);
+                        var archive = archiver('zip', { zlib: { level: 9 } });
+                        archive.pipe(output);
+
+                        archive.directory(uploadFolder, torrent.name);
+                        archive.finalize();
+                        
+                        output.on('close', () => { 
+                            console.log('Torrent Zipped successfully'); 
+                            var fileMetadata = {
+                                'name': zipFile,
+                                parents: [folderId]
+                            };
+                            var media = {
+                                mimeType: mime.lookup(zipFile),
+                                body: fs.createReadStream(zipFile)
+                            };
+                            drive.files.create({
+                                resource: fileMetadata,
+                                media: media,
+                                fields: 'id'
+                            }, function (err, file) {
+                                if (err) {
+                                // Handle error
+                                console.error(err);
+                                } else {
+                                console.log('File Id: ', file.data.id);
+                                }
+                            });
                         });
                     } else {
                         torrent.files.forEach(function (file) {
