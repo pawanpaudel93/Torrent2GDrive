@@ -46,10 +46,7 @@ export default {
   },
   methods: {
     logout () {
-      localStorage.clear()
       this.$store.dispatch('logout')
-      axios.get('/auth/logout')
-      this.$router.replace('/')
     }
   }
 }

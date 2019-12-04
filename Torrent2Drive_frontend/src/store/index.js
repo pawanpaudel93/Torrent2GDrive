@@ -60,21 +60,22 @@ export default new Vuex.Store({
           // console.log(err)
         })
     },
-    logout ({ commit }) {
+    logout ({ commit, actions }) {
+      localStorage.clear()
+      axios.get('/auth/logout')
+      router.replace('/')
+      actions.logout()
       commit('LOGOUT')
     },
-    autoLogin ({ getters }) {
+    autoLogin ({ actions }) {
       const expiresIn = localStorage.getItem('expiresIn')
       if (!expiresIn) {
         return
       }
       const now = new Date()
       if (now >= expiresIn) {
-        console.log('token expired')
-        localStorage.clear()
-        return
+        actions.logout()
       } else {
-        console.log('token not expired')
         router.replace('/download')
       }
     }
