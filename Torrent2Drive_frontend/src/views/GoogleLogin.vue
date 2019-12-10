@@ -18,7 +18,7 @@
             setTokenTimer() {
                 const now = new Date()
                 const expirationDate = new Date(now.getTime() + 60*60*1000)
-                localStorage.setItem('expiresIn', expirationDate);
+                localStorage.setItem('expiresIn', expirationDate.valueOf());
             }
         },
         created () {

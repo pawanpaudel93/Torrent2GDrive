@@ -60,22 +60,24 @@ export default new Vuex.Store({
           // console.log(err)
         })
     },
-    logout ({ commit, actions }) {
+    logout ({ commit }) {
       localStorage.clear()
       axios.get('/auth/logout')
       router.replace('/')
-      actions.logout()
       commit('LOGOUT')
     },
-    autoLogin ({ actions }) {
+    autoLogin ({ dispatch }) {
       const expiresIn = localStorage.getItem('expiresIn')
       if (!expiresIn) {
         return
       }
       const now = new Date()
-      if (now >= expiresIn) {
-        actions.logout()
+      if (now.valueOf() >= Number(expiresIn)) {
+        dispatch('logout')
       } else {
+        if (router.currentRoute.name === 'download') {
+          return
+        }
         router.replace('/download')
       }
     }
