@@ -9,7 +9,7 @@ import Vuelidate from 'vuelidate'
 
 Vue.use(Vuelidate)
 
-axios.defaults.baseURL = 'https://torrent2-gdrive.herokuapp.com'
+axios.defaults.baseURL = process.env.VUE_APP_BASEURL
 Vue.config.productionTip = false
 
 new Vue({

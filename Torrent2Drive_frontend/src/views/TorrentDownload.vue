@@ -3,15 +3,14 @@
         <button class="btn btn-info" @click="showDownloads">My current Downloads</button>
         <div class="download-form">
             <form @submit.prevent="onSubmit">
+                <input
+                      type="checkbox"
+                      id="zip"
+                      value="true"
+                      v-model="doZip"
+                >
+                <label for="zip"> Zip all torrent files?</label>
                 <div class="input" :class="{invalid: $v.magnet.$error}">
-                    <label for="zip">
-                            <input
-                                type="checkbox"
-                                id="zip"
-                                value="true"
-                                v-model="doZip"
-                            > Zip it?
-                    </label>
                     <label for="magnet">Magnet</label>
                     <input
                             type="text"
@@ -93,9 +92,11 @@ export default {
       }
     },
     downloadCompleted () {
+      this.magnet = ''
       this.showStats = false
       this.finished = true
       this.$refs.downloadButton.innerText = 'Download'
+      this.doZip = false
     }
   },
   created () {
@@ -171,5 +172,52 @@ export default {
         background-color: transparent;
         color: #ccc;
         cursor: not-allowed;
+    }
+
+    input[type=checkbox] + label {
+      display: block;
+      margin: 0.2em;
+      cursor: pointer;
+      padding: 0.2em;
+    }
+
+    input[type=checkbox] {
+      display: none;
+    }
+
+    input[type=checkbox] + label:before {
+      content: "\2714";
+      border: 0.1em solid #000;
+      border-radius: 0.2em;
+      display: inline-block;
+      width: 1.5em;
+      height: 1.5em;
+      padding-left: 0.2em;
+      padding-bottom: 0.3em;
+      margin-right: 0.2em;
+      vertical-align: bottom;
+      color: transparent;
+      transition: .2s;
+    }
+
+    input[type=checkbox] + label:active:before {
+      transform: scale(0);
+    }
+
+    input[type=checkbox]:checked + label:before {
+      /* background-color: MediumSeaGreen; */
+      border-color: MediumSeaGreen;
+      color: #fff;
+    }
+
+    input[type=checkbox]:disabled + label:before {
+      transform: scale(1);
+      border-color: #aaa;
+    }
+
+    input[type=checkbox]:checked:disabled + label:before {
+      transform: scale(1);
+      background-color: #bfb;
+      border-color: #bfb;
     }
 </style>

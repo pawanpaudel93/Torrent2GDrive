@@ -1,1 +1,0 @@
-Torrent Files stats are  saved in this folder.

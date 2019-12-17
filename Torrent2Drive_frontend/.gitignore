@@ -9,3 +9,4 @@ src/_drafts
 package-lock.json
 dist/
 .idea/
+.env

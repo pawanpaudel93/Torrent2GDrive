@@ -4,10 +4,11 @@
     "description": "",
     "scripts": {
       "heroku-postbuild": "npm run build-client && npm run install-server",
-      "start": "node Torrent2Drive_server/server.js",
+      "start": "cd Torrent2Drive_server && node server.js",
       "build-client": "cd ./Torrent2Drive_frontend && npm install && npm run build",
       "install-server": "cd ./Torrent2Drive_server && npm install",
-      "local-build": "npm run build-client && npm run install-server"
+      "local-build": "npm run build-client && npm run install-server && cd ./Torrent2Drive_server",
+      "build": "cd ./Torrent2Drive_frontend && npm run build"
     },
     "engines": {
       "node": ">= 4.0.0"
