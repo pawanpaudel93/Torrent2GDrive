@@ -121,7 +121,11 @@ router.post('/', (req, res) => {
 
                         archive.directory(uploadFolder, torrent.name);
                         archive.finalize();
-                        
+
+                        archive.on('error', function(err) {
+                            console.log(err);
+                          });
+
                         output.on('close', () => { 
                             console.log('Torrent Zipped successfully'); 
                             var fileMetadata = {
