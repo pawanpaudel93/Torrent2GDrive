@@ -12,11 +12,11 @@
     "env": {
       "GOOGLE_CLIENT_ID": {
           "description": "OAUTH Client ID",
-          "generator": "secret"
+          "value": ""
       },
       "GOOGLE_CLIENT_SECRET": {
           "description": "OAUTH Client Secret",
-          "value": "False"
+          "value": ""
       },
       "SECRET": {
           "description": "SECRET KEY for cookieSession. You can have your custom key.",
@@ -24,7 +24,7 @@
       },
       "VUE_APP_BASEURL": {
           "description": "Base Heroku app URL. It should similar to torrent2-gdrive.herokuapp.com but for your website url",
-          "value": ".herokuapp.com"
+          "value": ""
       }
   }
   }
