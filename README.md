@@ -1,4 +1,4 @@
-[![Torrent2GDrive](https://torrent2-gdrive.herokuapp.com/img/Torrent2Drive.0211de43.png)](https://torrent2-gdrive.herokuapp.com)
+[![Torrent2GDrive](https://raw.githubusercontent.com/pawanpaudel93/Torrent2GDrive/master/Torrent2Drive_frontend/public/img/icons/Torrent2Drive.png)](https://torrent2-gdrive.herokuapp.com)
 
 
 

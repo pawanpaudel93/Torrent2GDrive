@@ -2,6 +2,29 @@
     "name": "Torrent2GDrive",
     "description": "Torrent webapp to download to GDrive",
     "repository": "https://github.com/pawanpaudel93/Torrent2GDrive",
-    "logo": "https://torrent2-gdrive.herokuapp.com/img/Torrent2Drive.0211de43.png",
-    "keywords": ["node", "express", "webtorrent"]
+    "logo": "https://raw.githubusercontent.com/pawanpaudel93/Torrent2GDrive/master/Torrent2Drive_frontend/public/img/icons/Torrent2Drive.png",
+    "keywords": ["node", "express", "webtorrent", "vuejs"],
+    "buildpacks": [
+      {
+        "url": "heroku/nodejs"
+      }
+    ],
+    "env": {
+      "GOOGLE_CLIENT_ID": {
+          "description": "OAUTH Client ID",
+          "generator": "secret"
+      },
+      "GOOGLE_CLIENT_SECRET": {
+          "description": "OAUTH Client Secret",
+          "value": "False"
+      },
+      "SECRET": {
+          "description": "SECRET KEY for cookieSession. You can have your custom key.",
+         "value": "Torrent2Drive@VueJS"
+      },
+      "VUE_APP_BASEURL": {
+          "description": "Base Heroku app URL. It should similar to torrent2-gdrive.herokuapp.com but for your website url",
+          "value": ".herokuapp.com"
+      }
+  }
   }
