@@ -43,12 +43,10 @@
 
      > [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/pawanpaudel93/Torrent2GDrive)
 
-- Add all the environment variables from `.env-example` of `Torrent2Drive_server` and `Torrent2Drive_frontend` to Heroku app `Config vars` and add value for all. For `SECRET` paste value `Torrent2Drive@VueJS` or any custom text.
+- For `SECRET` paste value `Torrent2Drive@VueJS` or any custom text. and use OAUTH secret and client ID.
 
    `GOOGLE_CLIENT_ID`
 
    `GOOGLE_CLIENT_SECRET`
 
-   `SECRET`
-
-- Set heroku `VUE_APP_BASEURL` environment variable to your heroku app URL. I have used `https://torrent2-gdrive.herokuapp.com`. So, use your own heroku URL. 
+- Set heroku `VUE_APP_BASEURL` environment variable to your heroku app URL. I have used `https://t0rr3nt2gd.herokuapp.com`. So, use your own heroku URL which is `appName.herokuapp.com` where appName is your App name.
