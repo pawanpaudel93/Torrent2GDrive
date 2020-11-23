@@ -37,7 +37,7 @@
   > npm run start
 
 ### Deploy to Heroku
-
+  > :warning: **DON'T DEPLOY HEROKU NOW. DEPLOYING OF THIS APP MAY SUSPEND YOUR ACCOUNT.**
 - Goto [Google Developer Console](https://console.developers.google.com) and create OAuth credentials.
 - Deploy to Heroku
 
