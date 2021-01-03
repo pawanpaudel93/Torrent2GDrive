@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const router = express.Router();
 const WebTorrent = require('webtorrent-hybrid');
 const mime = require('mime-types');
@@ -44,6 +45,18 @@ var torrentClient = new WebTorrent(opts);
 //         res.status(400).send('Invalid Token');
 //     }
 // }
+
+async function getTrackers() {
+    try {
+        response = await axios.get('https://newtrackon.com/api/stable')
+        return await response.data.split(/[\r\n]+/).filter(e => e != '');
+    } catch (error) {
+        return [];
+    }
+}
+(async () => {
+    opts.trackers =  await getTrackers();
+})()
 
 router.get('/stats', (req,res) =>{
     const stats = localStorage.getItem(`${req.user.googleID}`);
@@ -139,7 +152,8 @@ router.post('/', (req, res) => {
                             drive.files.create({
                                 resource: fileMetadata,
                                 media: media,
-                                fields: 'id'
+                                fields: 'id',
+                                supportsAllDrives: true,
                             }, function (err, file) {
                                 if (err) {
                                 // Handle error
@@ -162,7 +176,8 @@ router.post('/', (req, res) => {
                             drive.files.create({
                                 resource: fileMetadata,
                                 media: media,
-                                fields: 'id'
+                                fields: 'id',
+                                supportsAllDrives: true,
                             }, function (err, file) {
                                 if (err) {
                                 // Handle error

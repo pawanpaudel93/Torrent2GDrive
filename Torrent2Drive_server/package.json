@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "archiver": "^3.1.1",
+    "axios": "^0.21.1",
     "browser-cookies": "^1.2.0",
     "connect-history-api-fallback": "^1.6.0",
     "cookie-session": "^1.4.0",
