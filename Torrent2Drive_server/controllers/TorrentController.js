@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-const WebTorrent = require('webtorrent-hybrid');
+const WebTorrent = require('webtorrent');
 const mime = require('mime-types');
 const jwt = require('jsonwebtoken');
 const {google} = require('googleapis');
@@ -12,39 +12,27 @@ const app = require('../server')
 const LocalStorage = require('node-localstorage').LocalStorage;
 const localStorage = new LocalStorage('./torrentStats');
 const archiver = require('archiver');
+const del = require('del');
 
 const opts = {
-	connections: 1000,     // Max amount of peers to be connected to.
-    uploads: 1,          // Number of upload slots.
-    tmp:  './downloads',          // Root folder for the files storage.
+	connections: 1000,       // Max amount of peers to be connected to.
+    uploads: 1,             // Number of upload slots.
+    tmp:  './downloads',   // Root folder for the files storage.
                           // Defaults to '/tmp' or temp folder specific to your OS.
-                          // Each torrent will be placed into a separate folder under /tmp/torrent-stream/{infoHash}
-    path: './downloads', // Where to save the files. Overrides `tmp`.
+                         // Each torrent will be placed into a separate folder under /tmp/torrent-stream/{infoHash}
+    path: './downloads',  // Where to save the files. Overrides `tmp`.
     verify: true,         // Verify previously stored data before starting
                           // Defaults to true
     dht: true,            // Whether or not to use DHT to initialize the swarm.
                           // Defaults to true
     tracker: true,        // Whether or not to use trackers from torrent file or magnet link
                           // Defaults to true
-    trackers: []
-                          // Allows to declare additional custom trackers to use
-                          // Defaults to empty
-    
+    trackers: []          // Allows to declare additional custom trackers to use
   };
 
 var torrentClient = new WebTorrent(opts);
+var torrentStats = {};
 
-// function verifyToken(req, res, next) {
-//     var token = req.header('auth-token');
-//     if(!token) return res.status(401).send('Access Denied');
-//     try {
-//         token = jwt.verify(token, process.env.TOKEN_SECRET);
-//         res.accessToken = token.accessToken;
-//         next();
-//     } catch {
-//         res.status(400).send('Invalid Token');
-//     }
-// }
 
 async function getTrackers() {
     try {
@@ -58,25 +46,42 @@ async function getTrackers() {
     opts.trackers =  await getTrackers();
 })()
 
-router.get('/stats', (req,res) =>{
-    const stats = localStorage.getItem(`${req.user.googleID}`);
-    res.json(stats); 
-});
+const getStats = (req, res) =>{
+    let stats = localStorage.getItem(`${req.user.info.googleID}`);
+    if (stats !== null) {
+        stats = Object.values(JSON.parse(stats));
+    } else {
+        stats = {};
+    }
+    return res.json(stats); 
+};
 
-router.get('/finished', (req,res) => {
-    const isFinished = localStorage.getItem('isFinished');
-    res.json(isFinished);
-});
+const deleteStat = (req, res) =>{
+    let infoHash = req.body.infoHash;
+    let name = req.body.name;
+    let stats = localStorage.getItem(`${req.user.info.googleID}`);
+    if (stats !== null) {
+        stats = JSON.parse(stats);
+    } else {
+        stats = {};
+    }
+    if (stats.hasOwnProperty(infoHash)) {
+        delete stats[infoHash];
+        // del.sync([`downloads/${name}/**`]) # TODO deletion rest
+        localStorage.setItem(`${req.user.info.googleID}`, JSON.stringify(stats));
+    }
+    return res.status(200).json({message: 'OK'});
+};
 
-router.post('/', (req, res) => {
-    localStorage.clear();
+const downloadTorrent = (req, res) => {
+    let error = {};
     var magnetURI = req.body.magnet;
     try {
         parseTorrent(magnetURI)
     } catch (err) {
-        res.status(500).json({error: err});
+        return res.status(500).json({error: err.message});
     }
-    console.log(magnetURI);
+
     torrentClient.add(magnetURI, opts, (torrent) => {
         // Got torrent metadata!
         console.log('Client is downloading:', torrent.infoHash)
@@ -87,19 +92,28 @@ router.post('/', (req, res) => {
             torrent.resume();
             stats = {
                 name: torrent.name,
+                infoHash: torrent.infoHash,
                 progress : (torrent.progress * 100).toFixed(2) + '%',
                 timeRemaining : torrent.timeRemaining/1000,
                 downloaded : (torrent.downloaded/(1024*1024)).toFixed(3) + ' MB',
                 speed : (torrent.downloadSpeed/(1024*1024)).toFixed(3) + ' MB/sec',
                 totalSize: (torrent.length/(1024*1024)).toFixed(3) + ' MB',
             }
-            localStorage.setItem(`${req.user.googleID}`, JSON.stringify(stats));
+            torrentStats[torrent.infoHash] = stats;
+            localStorage.setItem(`${req.user.info.googleID}`, JSON.stringify(torrentStats));
         }, 1000);
-
         torrent.on('done', function () {
             clearInterval(interval);
-            isFinished = {hasFinished: true}
+            let isFinished = {hasFinished: true}
             localStorage.setItem('isFinished', JSON.stringify(isFinished));
+            let stats = torrentStats[torrent.infoHash]
+            if (stats != null) {
+                stats.progress = "100%"
+                stats.timeRemaining = 0
+                stats.downloaded = stats.totalSize
+                torrentStats[torrent.infoHash] = stats;
+                localStorage.setItem(`${req.user.info.googleID}`, JSON.stringify(torrentStats));
+            }
             console.log('torrent download finished');
             // config google drive with client token
             const oauth2Client = new google.auth.OAuth2()
@@ -108,19 +122,24 @@ router.post('/', (req, res) => {
             });
             const drive = google.drive({version: 'v3', auth: oauth2Client});
             // for creating folders in google drive
+            let folderID = req.body.folderID;
             var fileMetadata = {
                 'name': torrent.name,
-                'mimeType': 'application/vnd.google-apps.folder'
+                'mimeType': 'application/vnd.google-apps.folder',
             };
+            if (folderID !== null) {
+                fileMetadata.parents = [folderID];
+            }
             drive.files.create({
                 resource: fileMetadata,
-                fields: 'id'
+                fields: 'id',
+                supportsAllDrives: true,
             }, function (err, file) {
                 if (err) {
                 // Handle error
-                console.error(err);
+                error = {error: err.message};
                 } else {
-                    console.log('Folder Id: ', file.data.id);
+                    // console.log('Folder Id: ', file.data.id);
                     var folderId = file.data.id;
                     // upload dwownloaded files
                     if (req.body.doZip) {
@@ -136,11 +155,12 @@ router.post('/', (req, res) => {
                         archive.finalize();
 
                         archive.on('error', function(err) {
-                            console.log(err);
-                          });
+                            // console.log(err);
+                            error = {error: err.message}
+                        });
 
                         output.on('close', () => { 
-                            console.log('Torrent Zipped successfully'); 
+                            // console.log('Torrent Zipped successfully');
                             var fileMetadata = {
                                 'name': zipFile,
                                 parents: [folderId]
@@ -157,10 +177,10 @@ router.post('/', (req, res) => {
                             }, function (err, file) {
                                 if (err) {
                                 // Handle error
-                                console.error(err);
-                                } else {
-                                console.log('File Id: ', file.data.id);
+                                // console.error(err);
+                                    error = {error: err.message}
                                 }
+                                // console.log('File Id: ', file.data.id);
                             });
                         });
                     } else {
@@ -181,18 +201,29 @@ router.post('/', (req, res) => {
                             }, function (err, file) {
                                 if (err) {
                                 // Handle error
-                                console.error(err);
-                                } else {
-                                console.log('File Id: ', file.data.id);
+                                    // console.error(err);
+                                    error = {error: err.message}
                                 }
+                                // console.log('File Id: ', file.data.id);
                             });
                         })
                     }
                 }
             });
-            return res.json({finished: 'true'})
+        });
+        torrentClient.on('error', function (err) {
+            error = {error: err.message};
         });
     })
-});
+    if (Object.keys(error).length !== 0) {
+        // return res.status(500).json({error: 'Cannot add duplicate torrent'})
+        return res.status(500).json(error)
+    }
+    return res.json({isFinished: true});
+};
 
-module.exports = router;
+module.exports = {
+    getStats: getStats,
+    deleteStat: deleteStat,
+    downloadTorrent: downloadTorrent
+};
