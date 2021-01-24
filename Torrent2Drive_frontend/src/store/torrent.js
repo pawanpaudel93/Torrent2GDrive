@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export default {
   state: {
-    stats: {},
+    stats: [],
   },
   mutations: {
     'SET_STATS' (state, stats) {

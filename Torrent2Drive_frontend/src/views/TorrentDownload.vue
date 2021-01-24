@@ -34,7 +34,7 @@
           </v-card-actions>
         </v-form>
       </v-card>
-      <app-download-status :downloadCompleted="downloadCompleted" :finished="finished"></app-download-status>
+      <app-download-status :downloadCompleted="downloadCompleted"></app-download-status>
     </v-container>
 </template>
 
@@ -49,7 +49,6 @@ export default {
     return {
       magnet: '',
       folderID: null,
-      finished: false,
       showStats: false,
       error: null,
       doZip: false

@@ -29,7 +29,7 @@ export default {
       state.user = state.isAuthenticated = null,
       state.token.access = state.token.refresh = {expiresIn: null}
       localStorage.removeItem('rowdy');
-      router.push({name: "Home"});
+      router.push({name: "Home"}).catch(err => {});
     }
   },
   actions: {
@@ -41,7 +41,7 @@ export default {
         })
         .catch((error) => {
         //   console.log(error)
-          router.push({ name: 'Login'});
+          router.push({ name: 'Login'}).catch(err => {});
         })
     },
     refreshToken ({commit, state, dispatch}) {
@@ -56,7 +56,7 @@ export default {
       localStorage.removeItem('rowdy');
       axios.get('/auth/logout')
       commit('LOGOUT')
-      router.push({ name: 'Home'});
+      router.push({ name: 'Home'}).catch(err => {});
     },
     inspectToken ({ commit, state, dispatch }) {
       const accessToken = state.token.access;
@@ -65,7 +65,7 @@ export default {
         const exp = refreshToken.expiresIn;
         if ((exp - Date.now())/1000 < 300) {
           commit('LOGOUT');
-          router.push({name: 'Login'});
+          router.push({name: 'Login'}).catch(err => {});
         }
       }
       if (accessToken.expiresIn) {
@@ -75,7 +75,7 @@ export default {
         }
       }
       if (!refreshToken && !accessToken) {
-        router.push({name: 'Login'});
+        router.push({name: 'Login'}).catch(err => {});
       }
     }
   },

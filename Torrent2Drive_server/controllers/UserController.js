@@ -28,18 +28,21 @@ const getUser = (req, res) => {
 };
 
 const refreshToken = (req, res) => {
-    refresh.requestNewAccessToken('google', req.user.refreshToken, function(err, accessToken, refreshToken) {
-        if (err) {
-            res.status(500).json({"message": err.message})
-        }
-        let user = req.user
-        user.accessToken = accessToken;
-        console.log(refreshToken);
-        req.logIn(user, function(err) {
-            if (err) { return res.status(500).json({"message": err.message})}
-            res.json({ expiresIn: new Date().setHours(new Date().getHours() + 1)})
-        })
-    });
+    try {
+        refresh.requestNewAccessToken('google', req.user.refreshToken, function(err, accessToken, refreshToken) {
+            if (err) {
+                res.status(500).json({"message": err.message})
+            }
+            let user = req.user
+            user.accessToken = accessToken;
+            req.logIn(user, function(err) {
+                if (err) { return res.status(500).json({"message": err.message})}
+                res.json({ expiresIn: new Date().setHours(new Date().getHours() + 1)})
+            })
+        });
+    } catch (err) {
+        res.status(500).json({error: err.message})
+    }
 }
 
 const logout = (req, res) => {
