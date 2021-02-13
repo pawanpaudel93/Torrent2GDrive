@@ -1,28 +1,26 @@
 <template>
-    <div id="app">
-        <app-header></app-header>
-        <router-view></router-view>
-    </div>
+  <v-app>
+    <app-header></app-header>
+    <v-main class="mt-3">
+      <router-view></router-view>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-    import Header from './components/Header';
-    export default {
-      components: {
-        appHeader: Header
-      },
-      created () {
-        this.$store.dispatch('autoLogin')
-      }
-    }
+import Header from '@/components/Header';
+
+export default {
+  name: 'App',
+
+  components: {
+    appHeader: Header,
+  },
+};
 </script>
 
 <style>
-    /*#app {*/
-    /*    font-family: 'Avenir', Helvetica, Arial, sans-serif;*/
-    /*    -webkit-font-smoothing: antialiased;*/
-    /*    -moz-osx-font-smoothing: grayscale;*/
-    /*    text-align: center;*/
-    /*    color: #2c3e50;*/
-    /*}*/
+  a {
+    text-decoration: none !important;
+  }
 </style>

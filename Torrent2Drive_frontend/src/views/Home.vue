@@ -1,19 +1,17 @@
 <template>
-    <div class="container">
-        <div class="jumbotron" style="margin-top: 75px;">
-            <h1 class="display-4">Hello, world!</h1>
-            <p class="lead">Welcome to Torrent2Drive.</p>
-            <hr class="my-4">
-            <p>You can download your torrent files to GDrive.</p>
-            <router-link class="btn btn-primary btn-lg" to="/login" tag="button">Authenticate with Google Drive</router-link>
-        </div>
+  <v-container>
+    <div class="justify-center pa-10 ma-auto mt-5" style="background-color: #e9ecef;">
+      <h1 class="display-4">Hello, world!</h1>
+      <p class="font-weight-regular">Welcome to Torrent2Drive.</p>
+      <hr class="my-4">
+      <p class="font-weight-light">You can download your torrent files to GDrive.</p>
+      <v-btn color="primary" to="/login">Authenticate with GDrive</v-btn>
     </div>
+  </v-container>
 </template>
 
 <script>
 export default {
-  created () {
-    this.$store.dispatch('autoLogin')
-  }
+  name: "Home"
 }
 </script>

@@ -1,26 +1,37 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Login from '../views/GoogleLogin'
-import Download from '../views/TorrentDownload'
+import store from '@/store/index'
+import Home from '@/views/Home.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Home
+    name: 'Home',
+    component: Home,
+    beforeEnter: (to, from, next) => {
+      if (store.getters.isAuthenticated) { next({name: "Download", query: {redirectedFrom: to.fullPath}}) }
+      else next()
+    }
   },
   {
     path: '/login',
-    name: 'login',
-    component: Login
+    name: 'Login',
+    component: () => import("@/views/GoogleLogin.vue"),
+    beforeEnter: (to, from, next) => {
+      if (store.getters.isAuthenticated) { next({name: "Download", query: {redirectedFrom: to.fullPath}}) }
+      else next()
+    }
   },
   {
     path: '/download',
-    name: 'download',
-    component: Download
+    name: 'Download',
+    component: () => import("@/views/TorrentDownload.vue"),
+    afterEnter: async (to, from, next) => {
+      if (!store.getters.isAuthenticated && router.history.current.name != "Login") {next({name: "Login", query: { redirectedFrom: to.fullPath}})}
+      else next()
+    }
   },
   {
     path: '*',

@@ -1,21 +1,45 @@
 <template>
-    <div class="card border-primary mb-3" style="max-width: 30rem;">
-        <div class="card-header">Download Stats</div>
-        <div class="card-body text-primary">
-            <h5 class="card-title">{{stats.name}}</h5>
-            <div class="progress" style="height: 20px;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" :style="{width: stats.progress, textAlign: 'center'}">
-                    <span style="color: black;"><b>{{stats.progress}}</b></span>
-                </div>
-            </div>
-            <p class="card-text">
-                Time Remaining: <span>{{stats.timeRemaining | toMinutesSeconds}}</span><br>
-                Speed: <span>{{stats.speed}}</span> <br>
-                Downloaded: <span>{{stats.downloaded}}</span> <br>
-                Total Size: <span>{{stats.totalSize}}</span>
-            </p>
+  <v-container>
+    <v-card class="mx-auto" elevation="1" v-for="(stat, index) in stats" v-bind:key="index">
+      <v-card-title>
+        {{stat.name}}
+        <v-icon color="green" v-text="'mdi-checkbox-marked-circle'" v-if="stat.progress=='100%'"></v-icon>
+        <v-spacer></v-spacer>
+        <v-btn text @click="removeTorrent(stat.infoHash, stat.name)" v-if="stat.progress=='100%'">
+          <v-icon color="red" v-text="'mdi-close'"></v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <v-progress-linear
+          v-model="stat.progress"
+          height="20"
+        >
+        <strong class="white--text">{{stat.progress}}</strong>
+        </v-progress-linear>
+        <div class="d-flex space-between">
+          <div class="font-weight-medium">Time Remaining:</div>
+          <v-spacer></v-spacer>
+          <div>{{stat.timeRemaining | toMinutesSeconds}}</div>
         </div>
-    </div>
+        <div class="d-flex space-between">
+          <div class="font-weight-medium">Size:</div>
+          <v-spacer></v-spacer>
+          <div>{{stat.totalSize}}</div>
+        </div>
+        <div class="d-flex space-between">
+          <div class="font-weight-medium">Downloaded:</div>
+          <v-spacer></v-spacer>
+          <div>{{stat.downloaded}}</div>
+        </div>
+        <div class="d-flex space-between">
+          <div class="font-weight-medium">Speed:</div>
+          <v-spacer></v-spacer>
+          <div>{{stat.speed}}</div>
+        </div>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <style scoped>
@@ -25,27 +49,28 @@
 </style>
 
 <script>
+import {mapGetters} from 'vuex'
 export default {
   props: ['downloadCompleted'],
   data () {
     return {
-      stats: null,
       interval: null
+    }
+  },
+  methods: {
+    removeTorrent(infoHash) {
+      this.$store.dispatch('deleteStat', {infoHash: infoHash, name: name})
     }
   },
   created () {
     this.interval = setInterval(() => {
       this.$store.dispatch('setStats')
-      if (JSON.parse(this.$store.getters.getStats)) {
-        this.stats = JSON.parse(this.$store.getters.getStats)
-      }
-      if (Number(JSON.parse(this.$store.getters.getStats).timeRemaining) <= 20) {
-        this.$store.dispatch('setFinished')
-        if (JSON.parse(this.$store.getters.isFinished)) {
-          this.downloadCompleted()
-        }
-      }
     }, 1000)
+  },
+  computed: {
+    ...mapGetters({
+      stats: "getStats"
+    })
   },
   destroyed () {
     clearInterval(this.interval)
