@@ -1,19 +1,21 @@
 const passport = require('passport')
 const refresh = require('passport-oauth2-refresh');
+const {google} = require('googleapis');
 
 //auth login
 
 const authentication = passport.authenticate('google', {
     accessType: 'offline',
-    scope: ['profile', 'https://www.googleapis.com/auth/drive.file', 'email']
+    scope: ['profile', 'https://www.googleapis.com/auth/drive', 'email']
 });
 
 const authenticationCallback =  (req, res) => {
     res.redirect('/download')
 };
 
-const getUser = (req, res) => {
+const getUser = async (req, res) => {
     try {
+        let drives = [{'name': 'Default', 'id': 'Default'}];
         let user = {
             info: req.user.info,
             token: {
@@ -21,7 +23,14 @@ const getUser = (req, res) => {
                 refresh: {expiresIn: new Date().setDate(new Date().getDate() + 7)}
             }
         };
-        res.json(user);
+        const oauth2Client = new google.auth.OAuth2()
+        oauth2Client.setCredentials({
+            'access_token': req.user.accessToken
+        });
+        const drive = google.drive({version: 'v3', auth: oauth2Client});
+        const response = await drive.drives.list({});
+        drives.push.apply(drives, response.data.drives)
+        res.json({user: user, drives: drives});
     } catch (err) {
         res.status(500).json({isAuthenticated: false});
     }

@@ -47,10 +47,15 @@ async function getTrackers() {
 })()
 
 const getStats = (req, res) =>{
-    let stats = localStorage.getItem(`${req.user.info.googleID}`);
-    if (stats !== null) {
-        stats = Object.values(JSON.parse(stats));
-    } else {
+    let stats;
+    try {
+        stats = localStorage.getItem(`${req.user.info.googleID}`);
+        if (stats !== null) {
+            stats = Object.values(JSON.parse(stats));
+        } else {
+            stats = [];
+        }
+    } catch (error) {
         stats = [];
     }
     return res.json(stats); 
@@ -86,7 +91,7 @@ const downloadUpload = async (req, torrent) => {
         'name': torrent.name,
         'mimeType': 'application/vnd.google-apps.folder',
     };
-    if (folderID !== null) {
+    if (folderID !== 'Default') {
         fileMetadata.parents = [folderID];
     }
     drive.files.create({

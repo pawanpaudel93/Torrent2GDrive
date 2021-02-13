@@ -10,7 +10,7 @@
           alt="Torrent2GDrive Logo"
           class="shrink mr-2"
           contain
-          src="@/assets/icons/Torrent2Drive.png"
+          src="@/assets/icons/logo.png"
           width="60"
         />
       </router-link>

@@ -18,6 +18,7 @@ export default {
         // eslint-disable-next-line handle-callback-err
         .catch(error => {
           // console.log(error)
+          dispatch('refreshToken');
         })
     },
     deleteStat ({ commit }, payload) {
@@ -28,6 +29,7 @@ export default {
         // eslint-disable-next-line handle-callback-err
         .catch(error => {
           // console.log(error)
+          dispatch('refreshToken');
         })
     },
   },

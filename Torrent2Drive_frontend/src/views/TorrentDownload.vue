@@ -8,13 +8,16 @@
               label="Zip all torrent files?"
               hide-details
             ></v-checkbox>
-            <v-text-field
-              v-model="folderID"
+            <v-select
               prepend-icon="mdi-folder-google-drive"
-              label="FolderID (Optional)"
-              autocomplete="on"
-              hide-details
-            ></v-text-field>
+              v-model="drive"
+              :items="drives"
+              item-text="name"
+              item-value="id"
+              label="Standard"
+              return-object
+              single-line
+            ></v-select>
             <v-text-field
               v-model="magnet"
               :class="{invalid: $v.magnet.$error}"
@@ -49,6 +52,7 @@ export default {
     return {
       magnet: '',
       folderID: null,
+      drive: {'name': 'Default', 'id': 'Default'},
       showStats: false,
       error: null,
       doZip: false
@@ -65,7 +69,8 @@ export default {
   computed: {
     ...mapGetters({
       user: 'getUser',
-      isAuthenticated: 'isAuthenticated'
+      isAuthenticated: 'isAuthenticated',
+      drives: 'drives',
     }),
     magnetErrors () {
         const errors = []
@@ -82,7 +87,7 @@ export default {
       this.$v.$touch()
       if (this.$v.$dirty && !this.$v.$error) {
         this.$store.state.stats = null
-        axios.post('/download', { magnet: this.magnet, doZip: this.doZip, folderID: this.folderID})
+        axios.post('/download', { magnet: this.magnet, doZip: this.doZip, folderID: this.drive.id})
           .then(res => {
             this.showStats = false
           })

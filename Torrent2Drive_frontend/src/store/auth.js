@@ -12,6 +12,7 @@ export default {
         expiresIn: null
       },
     },
+    drives: [],
     isAuthenticated: null,
   },
   mutations: {
@@ -25,6 +26,9 @@ export default {
     'SET_ACCESS' (state, token) {
       state.token.access = token;
     },
+    'SET_DRIVES' (state, drives) {
+      state.drives = drives;
+    },
     'LOGOUT' (state) {
       state.user = state.isAuthenticated = null,
       state.token.access = state.token.refresh = {expiresIn: null}
@@ -36,8 +40,9 @@ export default {
     setUser ({ commit }) {
       axios.get('/auth/user')
         .then(res => {
-          commit('SET_USER', res.data.info)
-          commit('SET_TOKEN', res.data.token)
+          commit('SET_USER', res.data.user.info)
+          commit('SET_TOKEN', res.data.user.token)
+          commit('SET_DRIVES', res.data.drives)
         })
         .catch((error) => {
         //   console.log(error)
@@ -54,7 +59,7 @@ export default {
     },
     logout ({ commit }) {
       localStorage.removeItem('rowdy');
-      axios.get('/auth/logout')
+      axios.get('/auth/logout').catch(err => {})
       commit('LOGOUT')
       router.push({ name: 'Home'}).catch(err => {});
     },
@@ -86,5 +91,8 @@ export default {
     isAuthenticated (state) {
       return state.isAuthenticated
     },
+    drives (state) {
+      return state.drives;
+    }
   }
 }
