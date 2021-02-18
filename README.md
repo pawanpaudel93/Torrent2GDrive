@@ -4,8 +4,12 @@
 
 # Torrent2Drive
 
-> A web application to download torrent directly to your Google Drive using Nodejs in backend and Vuejs in frontend.
+A web application to download torrent directly to your Google Drive using Nodejs in backend and Vuejs in frontend.
 
+# Features
+- Download Torrent and Upload to Google Drive.
+- Supports Shared google drive.
+- Upload the torrent by zipping.
 
 # Installation
 
@@ -27,14 +31,18 @@
   `VUE_APP_BASEURL=http://localhost:3000`
 - Goto `Torrent2Drive` folder and open terminal and write the following command for the project setup:
 (Make sure npm is installed!)
-
-  > npm run local-build
+  ```bash
+  npm run local-build
+  ```
 - Then to run the app write write:
-  > npm run start
+  ```bash
+  npm run start
+  ```
 - So if you update the app code and to build and start the app write:
-  > npm run build
-
-  > npm run start
+```bash
+  npm run build
+  npm run start
+  ```
 
 ### Deploy to Heroku
   > :warning: **DON'T DEPLOY HEROKU NOW. DEPLOYING OF THIS APP MAY SUSPEND YOUR ACCOUNT.**
