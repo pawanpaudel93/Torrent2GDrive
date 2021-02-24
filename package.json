@@ -11,7 +11,8 @@
     "build": "cd ./Torrent2Drive_frontend && npm run build"
   },
   "engines": {
-    "node": ">= 4.0.0"
+     "node": "<=14.x.x",
+  "npm": "<=6.x.x"
   },
   "cacheDirectories": [
     "Torrent2Drive_frontend/node_modules",
