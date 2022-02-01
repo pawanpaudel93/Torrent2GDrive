@@ -28,7 +28,7 @@
     "passport-oauth2-refresh": "^2.0.1",
     "rimraf": "^3.0.2",
     "webtorrent-hybrid": "^4.0.3",
-    "zip-local": "^0.3.4"
+    "zip-local": "^0.3.5"
   },
   "devDependencies": {}
 }
